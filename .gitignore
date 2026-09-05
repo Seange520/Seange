@@ -1,0 +1,47 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE settings
+.idea/
+*.iml
+.vscode/
+.vs/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Dependencies and package caches
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build output
+dist/
+build/
+out/
+bin/
+obj/
+target/
+.gradle/
+.next/
+.nuxt/
+coverage/
+htmlcov/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# macOS / Windows specific
+ehthumbs.db
+*.lnk
