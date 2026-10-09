@@ -45,3 +45,6 @@ htmlcov/
 # macOS / Windows specific
 ehthumbs.db
 *.lnk
+
+# 验证脚本的临时工作目录
+.verify_tmp/

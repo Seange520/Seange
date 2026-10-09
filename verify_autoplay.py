@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -24,7 +25,11 @@ if not m:
     raise SystemExit('没找到内联脚本块，snake.html 可能还没执行 build_snake.py')
 block = m.group(0)[len('<script>'):-len('</script>')]
 
-runner = os.path.join(HERE, '_autoplay_check.js')
+# 临时脚本放在仓库内被 .gitignore 忽略的 .verify_tmp/ 里。
+# 不用系统临时目录：某些受限环境（含沙箱）不允许写 %TEMP%。
+tmpdir = os.path.join(HERE, '.verify_tmp')
+os.makedirs(tmpdir, exist_ok=True)
+runner = os.path.join(tmpdir, 'autoplay_check.js')
 with io.open(runner, 'w', encoding='utf-8') as f:
     f.write(block)
     f.write(r'''
@@ -59,7 +64,20 @@ console.log(reached15 === N
   : '  结论：有 ' + (N - reached15) + ' 局未达标，达标率 ' + (reached15 / N * 100).toFixed(1) + '%');
 ''')
 
-node = r'C:\Users\Senage\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe'
+def find_node():
+    """找一个可用的 node：优先 PATH 上的，找不到再退回本机已知路径。"""
+    from shutil import which
+    for name in ('node', 'node.exe'):
+        p = which(name)
+        if p:
+            return p
+    fallback = r'C:\Users\Senage\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe'
+    if os.path.isfile(fallback):
+        return fallback
+    raise SystemExit('找不到 node，请先安装 Node.js 或把它加入 PATH')
+
+
+node = find_node()
 r = subprocess.run([node, runner], capture_output=True, text=True, encoding='utf-8')
 print('=' * 62)
 print('「AI 全程无需人工操作」验证（用 snake.html 内联的同一份代码）')
@@ -67,4 +85,7 @@ print('=' * 62)
 print(r.stdout.strip())
 if r.stderr.strip():
     print('stderr:', r.stderr.strip()[:500])
-os.remove(runner)
+
+# 清理临时目录
+import shutil
+shutil.rmtree(tmpdir, ignore_errors=True)
