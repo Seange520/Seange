@@ -271,6 +271,7 @@ button.danger:hover { background: rgba(229,72,77,.12); border-color: var(--food)
 
         <div class="controls">
             <button class="primary" id="btnStart">开始 / 暂停</button>
+            <button id="btnDemo">🤖 AI 自动演示</button>
             <button id="btnRestart">重新开始</button>
             <button id="btnTheme">🌙 深色主题</button>
             <button class="danger" id="btnReset">重置全部纪录</button>
@@ -1081,6 +1082,17 @@ var SnakeStore = (function () {
 
     document.getElementById('btnRestart').addEventListener('click', function () { beginRound(true); });
 
+    // 一键 AI 自动演示：切到 BFS 智能策略并立即自动开局，全程不需要再操作
+    document.getElementById('btnDemo').addEventListener('click', function () {
+        game.state.aiStrategy = 'smart';
+        var radios = document.querySelectorAll('input[name="ai"]');
+        Array.prototype.forEach.call(radios, function (r) { r.checked = (r.value === 'smart'); });
+        Array.prototype.forEach.call(document.querySelectorAll('.radio-item'), function (el) {
+            el.classList.toggle('active', el.getAttribute('data-mode') === 'smart');
+        });
+        beginRound(true);
+    });
+
     document.getElementById('btnReset').addEventListener('click', function () {
         if (!confirm('确定要清空最高分、累计局数和最近战绩吗？此操作不可撤销。')) return;
         store.resetAll();
@@ -1098,8 +1110,19 @@ var SnakeStore = (function () {
         Array.prototype.forEach.call(document.querySelectorAll('.radio-item'), function (el) {
             el.classList.toggle('active', el.getAttribute('data-mode') === mode);
         });
-        // 切换策略时重开一局，避免中途换脑导致方向冲突
-        beginRound(true);
+        if (mode === 'off') {
+            // 手动模式：重开一局但等玩家按键开始
+            stopLoop();
+            game.reset();
+            game.state.status = 'ready';
+            lastRecorded = true;
+            refreshScoreboard(false);
+            setStatus('手动模式：按方向键开始', '');
+            draw();
+        } else {
+            // AI 模式：任务书要求"全程无需人工操作"，所以选中即自动开局，不需要再点开始
+            beginRound(true);
+        }
     });
 
     elSpeed.addEventListener('input', function () {
@@ -1119,6 +1142,8 @@ var SnakeStore = (function () {
         var map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
         if (map[k]) {
             e.preventDefault();
+            // AI 模式下方向键不参与控制，保证"全程无需人工操作"
+            if (game.state.aiStrategy !== 'off') { setStatus('AI 模式运行中，方向键已禁用（切回手动模式可手玩）', 'running'); return; }
             if (game.state.status === 'ready') { beginRound(false); }
             else if (game.state.status === 'paused') { game.state.status = 'running'; startLoop(); }
             game.setDirection(map[k]);
@@ -1137,6 +1162,7 @@ var SnakeStore = (function () {
         touchStart = null;
         if (Math.abs(dx) < 18 && Math.abs(dy) < 18) return;
         var dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+        if (game.state.aiStrategy !== 'off') { setStatus('AI 模式运行中，滑动已禁用（切回手动模式可手玩）', 'running'); return; }
         if (game.state.status === 'ready') beginRound(false);
         game.setDirection(dir);
     }, { passive: true });
@@ -1146,10 +1172,6 @@ var SnakeStore = (function () {
     updateSpeedLabel();
     refreshScoreboard(false);
     renderHistory();
-    game.state.aiStrategy = 'smart';
-    draw();
-    // 若上次误留了暂停状态，保证初始可用
-    game.state.status = 'ready';
 
     /* ---------------- 截图/演示模式：snake.html#demo ----------------
        带 #demo 打开时，直接铺一个"长蛇 + AI 正在追击"的场面并自动开始，
@@ -1167,9 +1189,13 @@ var SnakeStore = (function () {
         g.nextDirection = 'right';
         g.score = 14;
         g.food = { x: 16, y: 4 };
-        g.status = 'ready';
-        lastRecorded = false;
+        lastRecorded = true;          // 演示局面不计入战绩
         beginRound(false);
+    } else {
+        // 选中 AI 策略时，页面一打开就自动开局：
+        // 任务书要求 AI 阶段"全程无需人工操作"，所以不能让用户还要点一次开始。
+        game.state.aiStrategy = 'smart';
+        beginRound(true);
     }
 })();
 </script>
