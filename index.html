@@ -109,6 +109,56 @@
             border-bottom-color: #1f4a7a;
         }
 
+        /* 作品列表：每一条都是可点击的整块区域 */
+        .work-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .work-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border: 1px solid #e6edf6;
+            border-radius: 14px;
+            background: #f8fbff;
+            text-decoration: none;
+            transition: border-color .18s ease, background-color .18s ease, transform .18s ease;
+        }
+
+        .work-item:hover {
+            border-color: #1f4a7a;
+            background: #eef4ff;
+            transform: translateY(-1px);
+        }
+
+        .work-icon {
+            font-size: 1.3rem;
+            line-height: 1.2;
+        }
+
+        .work-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .work-title {
+            color: #1a2e44;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .work-desc {
+            color: #64748b;
+            font-size: 0.83rem;
+            line-height: 1.5;
+        }
+
         .footer-note {
             margin-top: 28px;
             font-size: 0.85rem;
@@ -168,6 +218,35 @@
                 <span class="badge">集成电路</span>
                 <span class="badge">GitHub</span>
             </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="info-row" style="border-bottom: none; padding-bottom: 0;">
+        <span class="info-label">📂 我的作品</span>
+        <div class="work-list">
+            <a class="work-item" href="snake.html">
+                <span class="work-icon">🐍</span>
+                <span class="work-text">
+                    <span class="work-title">贪吃蛇（手动 + AI 自动演示）</span>
+                    <span class="work-desc">纯前端单文件网页游戏，键盘可手玩，也可切换 AI 自动玩</span>
+                </span>
+            </a>
+            <a class="work-item" href="https://github.com/Seange520/Seange">
+                <span class="work-icon">📦</span>
+                <span class="work-text">
+                    <span class="work-title">GitHub 仓库：Seange</span>
+                    <span class="work-desc">本作业全部源码：贪吃蛇、三个 PySpice 电路仿真、手算过程与对比表</span>
+                </span>
+            </a>
+            <a class="work-item" href="林堉翰_个人简介.pdf">
+                <span class="work-icon">📄</span>
+                <span class="work-text">
+                    <span class="work-title">个人简介（PDF）</span>
+                    <span class="work-desc">姓名、专业、兴趣与联系方式</span>
+                </span>
+            </a>
         </div>
     </div>
 

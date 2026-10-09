@@ -1144,6 +1144,11 @@ var SnakeStore = (function () {
             e.preventDefault();
             // AI 模式下方向键不参与控制，保证"全程无需人工操作"
             if (game.state.aiStrategy !== 'off') { setStatus('AI 模式运行中，方向键已禁用（切回手动模式可手玩）', 'running'); return; }
+            // 一局已经结束时，方向键不应该悄悄再开一局（原来会在这里无限重开）
+            if (game.state.status === 'over' || game.state.status === 'win') {
+                setStatus('本局已结束，按 R 或点「重新开始」再来一局', 'over');
+                return;
+            }
             if (game.state.status === 'ready') { beginRound(false); }
             else if (game.state.status === 'paused') { game.state.status = 'running'; startLoop(); }
             game.setDirection(map[k]);
@@ -1189,8 +1194,10 @@ var SnakeStore = (function () {
         g.nextDirection = 'right';
         g.score = 14;
         g.food = { x: 16, y: 4 };
-        lastRecorded = true;          // 演示局面不计入战绩
         beginRound(false);
+        // 上面 beginRound() 内部会把 lastRecorded 置为 false（正常计分），
+        // 演示局面不该记进战绩，所以在它之后覆盖掉，顺序不能反。
+        lastRecorded = true;
     } else {
         // 选中 AI 策略时，页面一打开就自动开局：
         // 任务书要求 AI 阶段"全程无需人工操作"，所以不能让用户还要点一次开始。
