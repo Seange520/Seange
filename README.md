@@ -1005,7 +1005,28 @@ Seange/
 ├── *_calc.pdf                三个电路的手算过程
 ├── *_circuit.png 等          自己画的电路图、直流通路、小信号等效模型
 └── LICENSE  README.md  .gitignore
-```
+
+## 任务书要求的三类图，分别对应哪个文件
+
+任务书对每个电路都要求「自己画的电路图 + 仿真波形图 + 对比表」，
+下面这张表说明每一样落在哪个文件上：
+
+| 类别 | 用在哪个电路 | 文件 | 来源 |
+|---|---|---|---|
+| **电路图**（自己画） | ① RC | `rc_lowpass_circuit.png` | 画图软件绘制 |
+| | ② 戴维南 | `thevenin_circuit_original.png`（含源二端网络）<br>`thevenin_circuit_equivalent.png`（等效电路） | 画图软件绘制 |
+| | ③ NMOS | `nmos_circuit.png`（主电路）<br>`nmos_dc_path.png`（直流通路）<br>`nmos_small_signal.png`（小信号等效模型） | 画图软件绘制 |
+| **仿真波形图** | ① RC | `rc_transient.png`（方波瞬态）<br>`rc_bode.png`（波特图：幅频 + 相频） | 脚本生成 |
+| | ② 戴维南 | `thevenin.png`（电压对比）<br>`thevenin_load_current.png`（电流对比） | 脚本生成 |
+| | ③ NMOS | `nmos_transient.png`（输入/输出波形，含反相标注） | 脚本生成 |
+| **对比表** | ① RC | `rc_table.txt`（τ 与 fc 手算 vs 仿真） | 脚本生成 |
+| | ② 戴维南 | `thevenin_table.txt`（V_oc / I_sc / 负载验证 三张表） | 脚本生成 |
+| | ③ NMOS | `nmos_table.txt`（工作点 / 小信号 / 误差归因 三张表） | 脚本生成 |
+
+> 电路图是**自己画的**（用画图软件，任务书允许"手绘拍照 / 画图软件均可"）；
+> 波形图和对比表是**脚本跑出来的真实数据**，不是手绘的示意图。
+> 另外还有 `thevenin.png`、`rc_lowpass.png` 等早期版本的图，保留作为对照。
+
 
 ### 为什么要拆成三个文件、又为什么要合成一个
 
