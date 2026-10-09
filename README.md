@@ -966,24 +966,47 @@ Av = −0.8661m × 1968.5 = −1.7050                      （用精确 ro）
 
 ```
 Seange/
-├── index.html              个人主页（部署在 GitHub Pages）
-├── snake.html              贪吃蛇游戏（双击即玩，纯前端单文件）
-├── snake_core.js           游戏逻辑核心：状态机 + 规则 + 两套 AI 算法
-├── snake_store.js          本地存储层：最高分 / 局数 / 最近 10 局 / 主题
-├── audit/                  测试脚本（Node 运行，不依赖浏览器）
-│   ├── snake_ai_test.js    两套 AI 的批量统计测试（达标率、均值、死因分布）
-│   ├── snake_diag.js       单局诊断：打印每一步的 AI 状态，定位死因
-│   └── snake_tune.js       安全性阈值 spaceFactor 的参数扫描
-├── screenshots/            README 用的界面截图
-├── docs/                   整改说明 + 技术原理与面答要点
-├── rc_lowpass.py           RC 低通：交流扫频（幅频）
-├── rc_transient.py         RC 低通：方波瞬态 + 完整波特图（本轮补齐）
-├── thevenin.py             戴维南：V_oc + I_sc + 负载电压/电流验证（本轮补齐）
-├── nmos_amplifier.py       NMOS 共源：自洽工作点 + gm 实测 + 反相验证（本轮改进）
-├── *_table.txt             三个电路的对比表（数据由脚本实际运行生成）
-├── *_calc.pdf              三个电路的手算过程
-├── *_circuit.png 等        自己画的电路图、直流通路、小信号等效模型
+├── index.html                个人主页（部署在 GitHub Pages）
+├── snake.html                贪吃蛇游戏 —— 交付用的自包含单文件，双击即玩
+├── snake_core.js             游戏逻辑核心：状态机 + 规则 + 两套 AI 算法（开发源文件）
+├── snake_store.js            本地存储层：最高分 / 局数 / 最近 10 局 / 主题（开发源文件）
+├── build_snake.py            把上面两个 .js 内联进 snake.html，生成单文件交付版
+├── verify_build.py           校验内联结果与源文件逐字节一致、且内联后仍能运行
+├── audit/                    测试脚本（Node 运行，不依赖浏览器）
+│   ├── snake_ai_test.js      两套 AI 的批量统计测试（达标率、均值、死因分布）
+│   ├── snake_diag.js         单局诊断：打印每一步的 AI 状态，定位死因
+│   └── snake_tune.js         安全性阈值 spaceFactor 的参数扫描
+├── screenshots/              README 用的界面截图
+├── docs/                     查漏补缺与修正记录 + 技术原理与面答要点
+├── rc_lowpass.py             RC 低通：交流扫频（幅频）
+├── rc_transient.py           RC 低通：方波瞬态 + 完整波特图
+├── thevenin.py               戴维南：V_oc + I_sc + 负载电压/电流验证
+├── nmos_amplifier.py         NMOS 共源：自洽工作点 + gm 实测 + 反相验证
+├── *_table.txt               三个电路的对比表（数据由脚本实际运行生成）
+├── *_calc.pdf                三个电路的手算过程
+├── *_circuit.png 等          自己画的电路图、直流通路、小信号等效模型
 └── LICENSE  README.md  .gitignore
+```
+
+### 为什么要拆成三个文件、又为什么要合成一个
+
+任务书要求游戏是「**纯前端单文件（HTML/CSS/JS），浏览器双击即可打开，无框架依赖**」。
+但开发时如果把逻辑、存储、界面全塞在 `snake.html` 一个文件里，
+`audit/` 下的测试脚本就没法引用游戏逻辑——只能靠手动玩很多局去数，既给不出统计结论，
+也没法保证"我测的"和"演示的"是同一份代码。
+
+所以采用**源文件 + 构建**的方式：
+
+- `snake_core.js` / `snake_store.js` 是**唯一事实来源**，测试脚本直接 `require` 它们；
+- `build_snake.py` 把这两个文件**原样内联**进 `snake.html`，生成自包含的单文件交付版；
+- `verify_build.py` 校验内联进去的代码与源文件**逐字节一致**，并且内联后仍能跑
+  （实测内联代码跑 200 局，199 局达到 15 个食物），确保"测的"就是"交的"。
+
+这样交付物仍然满足"单文件、双击即开、无框架依赖"，而测试能力也没有牺牲。
+改动逻辑后重新生成只需一条命令：
+
+```bash
+python build_snake.py && python verify_build.py
 ```
 
 ## 运行方法
