@@ -165,11 +165,12 @@ AI 会莫名其妙进入保命模式。
 
 **阶段一**：见 1.2 的四步手工验证。
 
-**阶段二**：两条命令，都是可复现的：
+**阶段二**：三条命令，都是可复现的：
 
 ```bash
-node audit/snake_ai_test.js 300    # 两套 AI 各跑 300 局，输出达标率对比
-python verify_autoplay.py          # 专测"零人工操作"：500 局只调 step()，不碰方向键
+node audit/snake_ai_test.js 300          # 两套 AI 各跑 300 局，输出达标率对比
+python verify_autoplay.py                # 专测"零人工操作"：500 局只调 step()，不碰方向键
+node audit/smoke_test_snake_html.js      # 运行时冒烟测试：真跑一遍页面，验证初始化与结束流程
 ```
 
 另外 `node audit/snake_diag.js 1000 300` 可以复跑并打印每一步的 AI 状态，
@@ -993,7 +994,8 @@ Seange/
 ├── audit/                    测试脚本（Node 运行，不依赖浏览器）
 │   ├── snake_ai_test.js      两套 AI 的批量统计测试（达标率、均值、死因分布）
 │   ├── snake_diag.js         单局诊断：打印每一步的 AI 状态，定位死因
-│   └── snake_tune.js         安全性阈值 spaceFactor 的参数扫描
+│   ├── snake_tune.js         安全性阈值 spaceFactor 的参数扫描
+│   └── smoke_test_snake_html.js  运行时冒烟测试：用假 DOM 真正执行 snake.html 的内联脚本
 ├── screenshots/              README 用的界面截图
 ├── docs/                     查漏补缺与修正记录 + 技术原理与面答要点
 ├── rc_lowpass.py             RC 低通：交流扫频（幅频）
