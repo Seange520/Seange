@@ -187,7 +187,7 @@ for i, RL in enumerate(loads):
                       f'{verr * 100:.2f}%', f'{i_orig[i] * 1e3:.4f}',
                       f'{i_equiv[i] * 1e3:.4f}', f'{ierr * 100:.2f}%'], W3, A3))
 lines.append('-' * 92)
-lines.append('误差 = |原电路 − 等效电路| / 原电路；电流由串在负载支路的 0V 电压源实测。')
+lines.append('误差 = |原电路 - 等效电路| / 原电路；电流由串在负载支路的 0V 电压源实测。')
 lines.append(f'各负载下电压最大相对误差 {max_verr * 100:.2f}%，'
              f'电流最大相对误差 {max_ierr * 100:.2f}%。')
 lines.append('说明：电压误差均为 0.00% 是 4 位小数四舍五入的结果——'
@@ -196,9 +196,12 @@ lines.append('说明：电压误差均为 0.00% 是 4 位小数四舍五入的�
 
 with open('thevenin_table.txt', 'w', encoding='utf-8') as f:
     f.write('\n'.join(lines) + '\n')
-print('\n已生成 thevenin_table.txt')
-print()
-print('\n'.join(lines))
+print('\n已生成 thevenin_table.txt（表格内容见该文件）')
+
+# 说明：上面三张表已经完整写入 thevenin_table.txt。
+# 这里不再把表格重复打印到控制台——Windows 控制台默认是 GBK 编码，
+# 打印含中文与特殊符号的长文本会抛 UnicodeEncodeError 导致脚本以非 0 退出
+# （表格文件本身是 UTF-8，不受影响）。需要看表就直接打开该文件。
 
 # ============================================================
 # 第七部分：画图
